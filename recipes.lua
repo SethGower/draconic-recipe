@@ -1,4 +1,4 @@
-local p = require("pl.pretty")
+#!/usr/bin/lua
 local json = require("json")
 
 local file = io.open("./recipes.json", "r")
@@ -12,27 +12,62 @@ local function tablelength(T)
     return count
 end
 
+local function matchrecipe(recipes, inventory)
+    local total_ingredients
+    local result = {}
+    for key,val in pairs(recipes) do
+        total_ingredients = {}
+        for key1,val1 in pairs(val.infusers) do
+            total_ingredients[key1] = val1
+        end
+        for key1, val1 in pairs(val.core) do
+            total_ingredients[key1] = val1
+        end
+    
+        if tablelength(total_ingredients) == tablelength(inventory) then
+            local found = true
+            local quantity = 10000
+            for _,val_inventory in ipairs(inventory) do
+                local found1 = false
+                for item, count in pairs(total_ingredients) do
+                    if item == val_inventory.name and count <= val_inventory.size then
+                        local quant = val_inventory.size // count
+                        if quant < quantity then quantity = quant end
+                        found1 = true
+                        break
+                    end
+                end
+                found = found1
+            end
+            if found then
+                result.name = key
+                result.size = quantity
+                break
+            end
+        end
+    end
+    return result
+end
+
 
 
 
 local output = json.decode(buff)
-print("JSON Output:")
-p.dump(output)
 print("=======================================")
 
 local inv = {}
 do
     local item = {}
     item.name = "dragonHeart"
-    item.size = 1
+    item.size = 2
     table.insert(inv, item)
     item = {}
     item.name = "draconicCore"
-    item.size = 6
+    item.size = 122
     table.insert(inv, item)
     item = {}
     item.name = "draconiumBlock"
-    item.size = 4
+    item.size = 8
     table.insert(inv, item)
 end
 
@@ -43,34 +78,6 @@ end
 print(string.format("Num Items in Inventory: %d", tablelength(inv)))
 print("=======================================")
 
-local total_ingredients
-local result = nil
-for key,val in pairs(output) do
-    total_ingredients = {}
-    for key1,val1 in pairs(val.infusers) do
-        total_ingredients[key1] = val1
-    end
-    for key1, val1 in pairs(val.core) do
-        total_ingredients[key1] = val1
-    end
+local result = matchrecipe(output, inv)
 
-    if tablelength(total_ingredients) == tablelength(inv) then
-        local found = true
-        for _,val_inv in ipairs(inv) do
-            local found1 = false
-            for item, count in pairs(total_ingredients) do
-                if item == val_inv.name then
-                    found1 = true
-                    break
-                end
-            end
-            found = found1
-        end
-        if found then
-            result = key
-            break
-        end
-    end
-end
-
-print(string.format("Result is: %s", result))
+print(string.format("Inventory Contents can make %s * %d", result.name, result.size))
