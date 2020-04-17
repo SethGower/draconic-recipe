@@ -6,56 +6,71 @@ io.input(file)
 
 local buff = io.read("*all")
 
-local inv = {}
-local item = {}
-item.name = "awakenedIngot"
-item.size = 5
-table.insert(inv, item)
-item = {}
-item.name = "draconicCore"
-item.size = 4
-table.insert(inv, item)
+local function tablelength(T)
+    local count = 0
+    for _ in pairs(T) do count = count + 1 end
+    return count
+end
 
+
+
+
+local output = json.decode(buff)
+print("JSON Output:")
+p.dump(output)
+print("=======================================")
+
+local inv = {}
+do
+    local item = {}
+    item.name = "dragonHeart"
+    item.size = 1
+    table.insert(inv, item)
+    item = {}
+    item.name = "draconicCore"
+    item.size = 6
+    table.insert(inv, item)
+    item = {}
+    item.name = "draconiumBlock"
+    item.size = 4
+    table.insert(inv, item)
+end
 
 print("Items in Inventory:")
 for slot, stack in ipairs(inv) do
     print(string.format("Slot %d: %s x %d", slot, stack.name, stack.size))
 end
+print(string.format("Num Items in Inventory: %d", tablelength(inv)))
+print("=======================================")
 
-local output = json.decode(buff)
-local common = {}
-local num_value = 0
-for key,value in pairs(output) do
-    print(string.format("New Recipe: %s", key))
-    for ingred, amt in pairs(value) do
-        num_value = num_value + 1
-        print(string.format("%s * %d",ingred, amt))
-        for _,stack in ipairs(inv) do
-            if stack.name == ingred then
-                table.insert(common, stack.name)
-                break
+local total_ingredients
+local result = nil
+for key,val in pairs(output) do
+    total_ingredients = {}
+    for key1,val1 in pairs(val.infusers) do
+        total_ingredients[key1] = val1
+    end
+    for key1, val1 in pairs(val.core) do
+        total_ingredients[key1] = val1
+    end
+
+    if tablelength(total_ingredients) == tablelength(inv) then
+        local found = true
+        for _,val_inv in ipairs(inv) do
+            local found1 = false
+            for item, count in pairs(total_ingredients) do
+                if item == val_inv.name then
+                    found1 = true
+                    break
+                end
             end
+            found = found1
+        end
+        if found then
+            result = key
+            break
         end
     end
-    local found
-    if #common == num_value then
-        found = true
-        -- for _,ingredient in ipairs(common) do
-        --     for ingred,_ in pairs(value) do
-        --         print(ingred)
-        --         found = ingred == ingredient
-        --         if found then
-        --             print(string.format("%s == %s: true", ingred, ingredient))
-        --         else
-        --             print(string.format("%s == %s: false", ingred, ingredient))
-        --         end
-        --     end
-        -- end
-    else
-        found = false
-    end
-    print(found)
 end
 
-
-
+print(string.format("Result is: %s", result))
