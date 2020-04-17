@@ -1,6 +1,20 @@
 {
-    "awakenedCore":{
-        "awakenedIngot":5,
-        "draconicCore":4
+  "awakenedCore": {
+    "infusers": {
+      "awakenedIngot": 5,
+      "draconicCore": 4
+    },
+    "core": {
+      "netherStar": 1
     }
+  },
+  "awakenedBlock": {
+    "infusers": {
+      "draconicCore": 6,
+      "dragonHeart": 1
+    },
+    "core": {
+      "draconiumBlock": 4
+    }
+  }
 }
