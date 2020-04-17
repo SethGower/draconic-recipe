@@ -1,9 +1,6 @@
 {
-    "recipes": [
-        "Awakened Core"
-    ],
-    "Awakened Core":{
-        "Draconium Ingot":5,
-        "Draconic Core":4
+    "awakenedCore":{
+        "awakenedIngot":5,
+        "draconicCore":4
     }
 }
