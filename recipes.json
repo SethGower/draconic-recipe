@@ -1,11 +1,11 @@
 {
   "awakenedCore": {
     "infusers": {
-      "awakenedIngot": 5,
-      "draconicCore": 4
+      "draconicevolution:draconic_ingot": 5,
+      "draconicevolution:wyvern_core": 4
     },
     "core": {
-      "netherStar": 1
+      "minecraft:nether_star": 1
     }
   },
   "awakenedBlock": {
